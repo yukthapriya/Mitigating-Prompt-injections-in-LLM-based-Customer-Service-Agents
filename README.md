@@ -1,117 +1,158 @@
-# LLM Guard - The Security Toolkit for LLM Interactions
+# Mitigating Prompt Injections in LLM-Based Customer Service Agents
 
-LLM Guard by [Protect AI](https://protectai.com/llm-guard) is a comprehensive tool designed to fortify the security of Large Language Models (LLMs).
+A scalable, multi-agent defense system designed to protect enterprise LLM-powered customer service agents from prompt injection, data exfiltration, and privilege-escalation attacks.
 
-[**Documentation**](https://protectai.github.io/llm-guard/) | [**Playground**](https://huggingface.co/spaces/ProtectAI/llm-guard-playground) | [**Changelog**](https://protectai.github.io/llm-guard/changelog/)
+## Overview
+Large Language Models (LLMs) are increasingly used in customer service systems, but they remain vulnerable to prompt injection attacks that can override instructions or leak sensitive data.
 
-[![GitHub
-stars](https://img.shields.io/github/stars/protectai/llm-guard.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/protectai/llm-guard/stargazers/)
-[![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![PyPI - Python Version](https://img.shields.io/pypi/v/llm-guard)](https://pypi.org/project/llm-guard)
-[![Downloads](https://static.pepy.tech/badge/llm-guard)](https://pepy.tech/project/llm-guard)
-[![Downloads](https://static.pepy.tech/badge/llm-guard/month)](https://pepy.tech/project/llm-guard)
+This project presents a **defense-in-depth, multi-agent architecture** that combines:
+- Deterministic routing
+- Semantic security checks
+- Distributed anomaly detection
+- Output exfiltration guards
 
-<a href="https://mlsecops.com/slack"><img src="https://github.com/protectai/llm-guard/blob/main/docs/assets/join-our-slack-community.png?raw=true" width="200" alt="Join Our Slack Community"></a>
+The system is designed for **real-time, enterprise-scale deployments** while maintaining low latency.
 
-## What is LLM Guard?
+## Key Features
+- Multi-agent security pipeline
+- Semantic prompt injection detection using BERT
+- Guardrails-based policy enforcement
+- Local LLM inference (no data leakage)
+- Distributed anomaly detection with Dask
+- Streamlit dashboard for monitoring and human review
+- Role-based access control for sensitive operations
 
-![LLM-Guard](https://github.com/protectai/llm-guard/blob/main/docs/assets/flow.png?raw=true)
+## System Architecture
+The system consists of the following agents:
 
-By offering sanitization, detection of harmful language, prevention of data leakage, and resistance against prompt
-injection attacks, LLM-Guard ensures that your interactions with LLMs remain safe and secure.
+### 1. PreFilter Agent
+- Fast syntactic checks
+- Unicode normalization
+- Regex-based jailbreak detection
+
+### 2. Router Agent
+- Deterministic routing rules
+- Role-based access control (RBAC)
+- Early blocking of privileged commands
+
+### 3. Security Agent
+- Guardrails policy engine
+- Fine-tuned DistilBERT classifier
+- Semantic prompt injection detection
+
+### 4. Query Agent
+- Safe LLM interaction
+- Prompt sanitization and templating
+- Retrieval-augmented generation (RAG)
+
+### 5. Output Guard
+- Detects data exfiltration
+- Redacts sensitive content
+- Blocks unsafe responses
+
+### 6. Distributed Monitoring Layer
+- Dask-based anomaly detection
+- Pattern tracking across large query volumes
+
+## Tech Stack
+- Python 3.11
+- PyTorch (GPU support)
+- LangChain
+- Guardrails (NeMo Guardrails)
+- DistilBERT (Transformers)
+- Ollama (Llama-3.1-8B local model)
+- Dask (distributed processing)
+- Streamlit (admin dashboard)
 
 ## Installation
 
-Begin your journey with LLM Guard by downloading the package:
-
-```sh
-pip install llm-guard
+### 1. Clone the repository
+```bash
+git clone https://github.com/your-username/llm-prompt-injection-defense.git
+cd llm-prompt-injection-defense
 ```
 
-## Getting Started
+### 2. Create a virtual environment
+```bash
+python -m venv venv
+source venv/bin/activate   # macOS/Linux
+venv\Scripts\activate      # Windows
+```
 
-**Important Notes**:
+### 3. Install dependencies
+```bash
+pip install langchain guardrails-ai transformers streamlit ollama pandas numpy scikit-learn tqdm
+pip install "dask[distributed]"
+```
 
-- LLM Guard is designed for easy integration and deployment in production environments. While it's ready to use
-  out-of-the-box, please be informed that we're constantly improving and updating the repository.
-- Base functionality requires a limited number of libraries. As you explore more advanced features, necessary libraries
-  will be automatically installed.
-- Ensure you're using Python version 3.9 or higher. Confirm with: `python --version`.
-- Library installation issues? Consider upgrading pip: `python -m pip install --upgrade pip`.
+For GPU support:
+```bash
+pip install "torch torchvision torchaudio" --index-url https://download.pytorch.org/whl/cu121
+```
 
-**Examples**:
+## Running the System
 
-- Get started with [ChatGPT and LLM Guard](./examples/openai_api.py).
-- Deploy LLM Guard as [API](https://protectai.github.io/llm-guard/api/overview/)
+### 1. Start the local LLM (Ollama)
+```bash
+ollama run llama3.1:8b
+```
 
-## Supported scanners
+### 2. Launch the multi-agent backend
+```bash
+uvicorn app:app
+```
 
-### Prompt scanners
+### 3. Start the admin dashboard
+```bash
+streamlit run dashboard.py --server.port=8501
+```
 
-- [Anonymize](https://protectai.github.io/llm-guard/input_scanners/anonymize/)
-- [BanCode](./docs/input_scanners/ban_code.md)
-- [BanCompetitors](https://protectai.github.io/llm-guard/input_scanners/ban_competitors/)
-- [BanSubstrings](https://protectai.github.io/llm-guard/input_scanners/ban_substrings/)
-- [BanTopics](https://protectai.github.io/llm-guard/input_scanners/ban_topics/)
-- [Code](https://protectai.github.io/llm-guard/input_scanners/code/)
-- [Gibberish](https://protectai.github.io/llm-guard/input_scanners/gibberish/)
-- [InvisibleText](https://protectai.github.io/llm-guard/input_scanners/invisible_text/)
-- [Language](https://protectai.github.io/llm-guard/input_scanners/language/)
-- [PromptInjection](https://protectai.github.io/llm-guard/input_scanners/prompt_injection/)
-- [Regex](https://protectai.github.io/llm-guard/input_scanners/regex/)
-- [Secrets](https://protectai.github.io/llm-guard/input_scanners/secrets/)
-- [Sentiment](https://protectai.github.io/llm-guard/input_scanners/sentiment/)
-- [TokenLimit](https://protectai.github.io/llm-guard/input_scanners/token_limit/)
-- [Toxicity](https://protectai.github.io/llm-guard/input_scanners/toxicity/)
+## Evaluation Results
+- Tested on **50,000 augmented attack queries**
+- **83.8% injection detection recall**
+- **5–10% latency overhead**
+- Designed for **10,000 queries per minute** environments
 
-### Output scanners
+## Threat Model
+The system defends against:
+- Direct prompt injections
+- Indirect/multi-turn injections
+- Multilingual and encoded attacks
+- Data exfiltration attempts
+- Insider and privilege escalation attacks
+- Sensitive information disclosure
 
-- [BanCode](./docs/output_scanners/ban_code.md)
-- [BanCompetitors](https://protectai.github.io/llm-guard/output_scanners/ban_competitors/)
-- [BanSubstrings](https://protectai.github.io/llm-guard/output_scanners/ban_substrings/)
-- [BanTopics](https://protectai.github.io/llm-guard/output_scanners/ban_topics/)
-- [Bias](https://protectai.github.io/llm-guard/output_scanners/bias/)
-- [Code](https://protectai.github.io/llm-guard/output_scanners/code/)
-- [Deanonymize](https://protectai.github.io/llm-guard/output_scanners/deanonymize/)
-- [JSON](https://protectai.github.io/llm-guard/output_scanners/json/)
-- [Language](https://protectai.github.io/llm-guard/output_scanners/language/)
-- [LanguageSame](https://protectai.github.io/llm-guard/output_scanners/language_same/)
-- [MaliciousURLs](https://protectai.github.io/llm-guard/output_scanners/malicious_urls/)
-- [NoRefusal](https://protectai.github.io/llm-guard/output_scanners/no_refusal/)
-- [ReadingTime](https://protectai.github.io/llm-guard/output_scanners/reading_time/)
-- [FactualConsistency](https://protectai.github.io/llm-guard/output_scanners/factual_consistency/)
-- [Gibberish](https://protectai.github.io/llm-guard/output_scanners/gibberish/)
-- [Regex](https://protectai.github.io/llm-guard/output_scanners/regex/)
-- [Relevance](https://protectai.github.io/llm-guard/output_scanners/relevance/)
-- [Sensitive](https://protectai.github.io/llm-guard/output_scanners/sensitive/)
-- [Sentiment](https://protectai.github.io/llm-guard/output_scanners/sentiment/)
-- [Toxicity](https://protectai.github.io/llm-guard/output_scanners/toxicity/)
-- [URLReachability](https://protectai.github.io/llm-guard/output_scanners/url_reachability/)
+## Project Structure
+```
+agents/
+  ├── prefilter.py
+  ├── router.py
+  ├── security.py
+  ├── query.py
+  └── output_guard.py
 
-## Community, Contributing, Docs & Support
+app.py
+dashboard.py
+train_security_model.py
+requirements.txt
+```
 
-LLM Guard is an open source solution.
-We are committed to a transparent development process and highly appreciate any contributions.
-Whether you are helping us fix bugs, propose new features, improve our documentation or spread the word,
-we would love to have you as part of our community.
+## Research Questions
+1. How can LLM security systems scale with low latency?
+2. How can models generalize to unseen injection attacks?
+3. How can enterprise AI systems remain transparent and trustworthy?
 
-- Give us a ⭐️ github star ⭐️ on the top of this page to support what we're doing,
-  it means a lot for open source projects!
-- Read our
-  [docs](https://protectai.github.io/llm-guard/)
-  for more info about how to use and customize LLM Guard, and for step-by-step tutorials.
-- Post a [Github
-  Issue](https://github.com/protectai/llm-guard/issues) to submit a bug report, feature request, or suggest an improvement.
-- To contribute to the package, check out our [contribution guidelines](CONTRIBUTING.md), and open a PR.
+## Future Work
+- Lower false-positive rates
+- Adaptive online learning from flagged prompts
+- Integration with enterprise identity systems
+- Multimodal injection defenses
 
-Join our Slack to give us feedback, connect with the maintainers and fellow users, ask questions,
-get help for package usage or contributions, or engage in discussions about LLM security!
+## Authors
+- Yuktha Priya Masupalli  
+- Sai Lahari Pathipati  
+- Jagan Nookala  
+Texas A&M University–San Antonio
 
-<a href="https://mlsecops.com/slack"><img src="https://github.com/protectai/llm-guard/blob/main/docs/assets/join-our-slack-community.png?raw=true" width="200" alt="Join Our Slack Community"></a>
-
-### Production Support
-
-We're eager to provide personalized assistance when deploying your LLM Guard to a production environment.
-
-- [Send Email ✉️](mailto:community@protectai.com)
+## License
+MIT License (or your chosen license)
