@@ -155,4 +155,4 @@ requirements.txt
 Texas A&M University–San Antonio
 
 ## License
-MIT License (or your chosen license)
+MIT License 
